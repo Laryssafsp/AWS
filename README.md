@@ -1,2 +1,1 @@
-# AWS
-Treinamentos e Cursos AWS
+# AWS Treinamentos e Cursos
