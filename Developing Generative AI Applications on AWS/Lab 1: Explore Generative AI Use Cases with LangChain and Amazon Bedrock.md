@@ -1,5 +1,7 @@
 In this lab, you learn about the architecture patterns to build applications for key generative AI use cases and work through examples of generating and summarizing text, question answering, and a chatbot.
 
+**conteúdo:** https://online.vitalsource.com/reader/books/300-MLDGAI-12-EN-LG-E
+
 # 🧪 Resumo do Funcionamento do Laboratório 1 (IA Generativa com LangChain e Amazon Bedrock)
 
 ## 🎯 Objetivo Principal
