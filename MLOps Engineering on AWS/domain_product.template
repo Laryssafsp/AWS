@@ -1,0 +1,42 @@
+Parameters:
+  VpcId:
+    Type: String
+    Description: "The ID of the Amazon Virtual Private Cloud (VPC) that SageMaker uses for communication."
+    
+  Subnets:
+    Type: String
+    Description: "The comma separated list of VPC subnet IDs that SageMaker uses for communication."
+
+Mappings:
+  RegionMapARN:
+    us-east-1:
+      sdistributionarn: "arn:aws:sagemaker:us-east-1:885854791233:image/sagemaker-distribution-cpu"
+    us-west-2:
+      sdistributionarn: "arn:aws:sagemaker:us-west-2:542918446943:image:image/sagemaker-distribution-cpu"
+
+Resources:
+  SageMakerDomain:
+    Type: AWS::SageMaker::Domain
+    Properties:
+      DomainName: SageMaker-Domain
+      VpcId: !Ref VpcId
+      SubnetIds: !Split [',', !Ref Subnets ]
+      AuthMode: IAM
+      DefaultSpaceSettings:
+        ExecutionRole: !Join ["", ["arn:aws:iam::", !Ref AWS::AccountId, ":role/LabVPC-notebook-role"] ]
+      DefaultUserSettings:
+        ExecutionRole: !Join ["", ["arn:aws:iam::", !Ref AWS::AccountId, ":role/LabVPC-notebook-role"] ]
+        SharingSettings:
+          NotebookOutputOption: Allowed
+        StudioWebPortalSettings:
+          HiddenAppTypes:
+            ["CodeEditor", "Canvas", "JupyterServer", "RStudioServerPro"]
+          HiddenMlTools: [
+              "Experiments",
+              "DataWrangler",
+              "FeatureStore",
+              "EmrClusters",
+              "JumpStart",
+              "InferenceRecommender",
+              "Projects"
+            ]

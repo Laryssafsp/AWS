@@ -1,0 +1,126 @@
+Parameters:
+  DomainId:
+    Type: String
+    Description: ID of the SageMaker Domain
+  UserProfileName:
+    Type: String
+    Description: Name the new user profile
+  LabRepoUrl:
+    Type: String
+
+Mappings:
+  RegionMapARN:
+    us-east-1:
+      sdistributionarn: "arn:aws:sagemaker:us-east-1:885854791233:image/sagemaker-distribution-cpu"
+    us-west-2:
+      sdistributionarn: "arn:aws:sagemaker:us-west-2:542918446943:image/sagemaker-distribution-cpu"
+
+Resources:
+  UserProfile:
+    Type: AWS::SageMaker::UserProfile
+    Properties:
+      UserProfileName: !Ref UserProfileName
+      DomainId: !Ref DomainId
+      UserSettings:
+        ExecutionRole: !Sub "arn:aws:iam::${AWS::AccountId}:role/LabVPC-notebook-role"
+        JupyterLabAppSettings:
+          CodeRepositories: [{ "RepositoryUrl": !Ref LabRepoUrl }]
+          DefaultResourceSpec:
+            InstanceType: ml.t3.medium
+
+  SageMakerSpace:
+    DependsOn: UserProfile
+    Type: AWS::SageMaker::Space
+    Properties:
+      DomainId: !Ref DomainId
+      OwnershipSettings: { "OwnerUserProfileName": !Ref UserProfileName }
+      SpaceDisplayName: SageMakerSpace
+      SpaceName: LabSpace
+      SpaceSettings:
+        AppType: JupyterLab
+        JupyterLabAppSettings:
+          CodeRepositories: [{ "RepositoryUrl": !Ref LabRepoUrl }]
+          DefaultResourceSpec:
+            InstanceType: ml.t3.medium
+      SpaceSharingSettings: { "SharingType": "Shared" }
+
+#-----End - Command host for bootstrapping
+
+# - Start - The SSM Automation Documents -#
+  SageMakerAutomation:
+    DependsOn: SageMakerSpace
+    Type: AWS::SSM::Document
+    Properties:
+      Name: SageMakerAutomation
+      DocumentType: Command
+      Content:
+        description: |-
+          This automation additional bootstrapping commands for the SageMaker Environment.
+        parameters:
+          imagearn:
+            type: "String"
+            description: "image parameter"
+            default:
+              !FindInMap [RegionMapARN, !Ref AWS::Region, sdistributionarn]
+        schemaVersion: "2.2"
+        mainSteps:
+        # --- 1. Create LifeCycle Config ---#
+          - name: LCCVariable
+            action: aws:runShellScript
+            onFailure: Abort
+            inputs:
+              runCommand:
+                - LCC_CONTENT=`openssl base64 -A -in /home/ssm-user/LifecycleConfig.sh`
+                - !Sub aws sagemaker create-studio-lifecycle-config --region ${AWS::Region}
+                  --studio-lifecycle-config-name lcc
+                  --studio-lifecycle-config-content $LCC_CONTENT
+                  --studio-lifecycle-config-app-type 'JupyterLab'
+        #--- 2.  Update User Profile ---#
+          - name: updateUserProfile
+            action: aws:runShellScript
+            onFailure: Abort
+            inputs:
+              runCommand:
+                - aws sagemaker list-studio-lifecycle-configs > /home/ssm-user/lifecycles.json
+                - LC_ARN=`cat /home/ssm-user/lifecycles.json | python3 -c "import sys, json; print(json.load(sys.stdin)['StudioLifecycleConfigs'][0]['StudioLifecycleConfigArn'])"`
+                - aws sagemaker list-domains > /home/ssm-user/domainid.json
+                - DOMAIN_ID=`cat /home/ssm-user/domainid.json | python3 -c "import sys, json; print(json.load(sys.stdin)['Domains'][0]['DomainId'])"`
+                - !Sub lab_app_settings=\''{"ExecutionRole":"arn:aws:iam::${AWS::AccountId}:role/LabVPC-notebook-role","JupyterLabAppSettings":{"DefaultResourceSpec":{"LifecycleConfigArn":"'"${!LC_ARN}"'"},"LifecycleConfigArns":["'"${!LC_ARN}"'"]}}'\'
+                - app1=`echo $lab_app_settings | sed -e "s/'//g"`
+                - space_app_settings="{\"InstanceType\":\"ml.t3.medium\",\"SageMakerImageArn\":\"{{imagearn}}\"}"
+                - space_app=`echo $space_app_settings`
+                - !Sub aws sagemaker update-domain --region ${AWS::Region}
+                  --domain-id $DOMAIN_ID
+                  --default-user-settings $app1
+                # get sagemaker domain status and wait until it is InService
+                - !Sub while true; do status=$(aws sagemaker describe-domain --region ${AWS::Region} --domain-id $DOMAIN_ID | python3 -c "import sys, json; print(json.load(sys.stdin)['Status'])"); if [ "$status" == "InService" ]; then break; fi; sleep 10; done
+                - !Sub aws sagemaker create-app --region ${AWS::Region}
+                  --app-name "default"
+                  --app-type "JupyterLab"
+                  --domain-id $DOMAIN_ID
+                  --space-name LabSpace
+                  --resource-spec $space_app
+                - !Sub until aws sagemaker describe-app --app-type JupyterLab --domain-id $DOMAIN_ID --app-name default --space-name LabSpace --query 'Status' --output text | grep -q 'InService'; do sleep 15; done
+                
+        #--- 3.  Invoke Cleanup Function to remove the command host ec2 instance---#
+          - name: InvokeCleanupFunction
+            action: aws:runShellScript
+            onFailure: Abort
+            inputs:
+              runCommand:
+                - aws lambda invoke --function-name CleanupFunction response.json
+
+# - End - The SSM Automation Documents -#
+
+  # --- The SSM association which will run the bootstrap automation against the CommandHost instance. --- #
+  CommandHostAssociation:
+    Type: AWS::SSM::Association
+    Properties:
+      AssociationName: CommandHostAssociation
+      Name: !Ref SageMakerAutomation
+      Targets:
+        - Key: tag:Name
+          Values:
+            - "CommandHost"
+      WaitForSuccessTimeoutSeconds: 900
+# ------------------------------------------------------ #
