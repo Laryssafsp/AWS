@@ -1,6 +1,8 @@
 # Lab 1: Provisioning a SageMaker Studio Environment with AWS Service Catalog an hour
 This lab provides you with a basic overview to setup Amazon SageMaker Studio using AWS Service Catalog and also gives an overview of SageMaker Studio UI navigation.
 
+[Github](https://github.com/Laryssafsp/AWS/blob/main/MLOps%20Engineering%20on%20AWS/Lab_1_files/lab_1.ipynb)
+
 # 🧪 Resumo do Funcionamento do Laboratório 1 (SageMaker Studio com Service Catalog)
 
 ## 🎯 Objetivo Principal
