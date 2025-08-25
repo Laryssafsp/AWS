@@ -8,6 +8,8 @@ O laboratório foca em criar buckets, fazer upload/download de objetos, processa
 
 ---
 
+Comando: no TERMINAL do VS Code, execute o comando abaixo para alterar os diretórios para `~/environment`
+
 ## ✅ Etapas e Funcionamento
 
 ### 🔹 1. Criar Bucket no Amazon S3 (`create-bucket.py`)
