@@ -1,0 +1,65 @@
+# Laboratório 1: Provisão de um ambiente do SageMaker Studio com o AWS Service Catalog
+
+# 🧪 Resumo do Funcionamento do Laboratório 1 (AWS SageMaker Studio + Service Catalog)
+
+🎯 **Objetivo Principal**  
+Provisionar um **domínio e perfil de usuário do SageMaker** via **AWS Service Catalog**, explorar os recursos do **SageMaker Studio** (IDE de ML integrado) e **trazer um contêiner Docker personalizado** para o ambiente.
+
+---
+
+## ✅ Etapas e Funcionamento
+
+### 🔹 1. Criação de Produtos no Service Catalog
+- Revisar modelos CloudFormation no bucket S3:  
+  - `domain_product.template` → cria **SageMaker Domain**.  
+  - `user_profile_product.template` → cria **SageMaker User Profile** + **SageMaker Space**.  
+- Criar dois produtos no **Service Catalog**:  
+  - **SageMaker Domain** → define domínio, rede e permissões IAM.  
+  - **SageMaker User Profile** → vincula usuário e espaço de colaboração.  
+- Organizar em um **Portfólio** (`AnyCompany Consulting Data Scientists`) e conceder acesso ao usuário de teste `data-scientist-test-user`.
+
+---
+
+### 🔹 2. Lançamento de Produtos do Service Catalog
+- Logar como `data-scientist-test-user` (IAM).  
+- Provisionar:  
+  - **Domínio do SageMaker** → configurado com VPC e sub-redes.  
+  - **Perfil de Usuário do SageMaker** → associado ao domínio.  
+- Acompanhar criação via **CloudFormation** até status `CREATE_COMPLETE`.  
+- Iniciar aplicação **SageMaker Studio** → abrir espaço de trabalho **JupyterLab**.
+
+---
+
+### 🔹 3. Exploração do SageMaker Studio
+- Interface visual única para **todo ciclo de ML**: preparação, treinamento, deploy e monitoramento.  
+- Criar notebooks, explorar recursos (Projects, JumpStart, Feature Store, Endpoints, etc.).  
+- Clonar repositório Git no **JupyterLab** → integrar código de ML ao ambiente.  
+
+---
+
+### 🔹 4. Contêiner Personalizado
+- Abrir notebook `lab_1_pt_br.ipynb` no JupyterLab.  
+- Criar e registrar **contêiner Docker customizado** dentro do SageMaker Studio.  
+- Executar células do notebook para validar uso do contêiner em pipelines de ML.
+
+---
+
+## 🧠 Como tudo funciona junto
+
+| Componente | Função |
+|------------|--------|
+| **AWS Service Catalog** | Cria e gerencia produtos (Domínio + Perfil SageMaker) como IaC. |
+| **CloudFormation** | Backend usado para provisionar os recursos do SageMaker. |
+| **SageMaker Domain** | Estrutura de rede, permissões e volume EFS para colaboração. |
+| **SageMaker User Profile** | Identidade de cientista de dados dentro do domínio. |
+| **SageMaker Studio** | IDE completo para workflows de ML (dados → treino → deploy). |
+| **Contêiner Docker Customizado** | Permite trazer ambientes e dependências específicas para ML. |
+
+---
+
+## 🚀 Resultado Final
+- Produtos criados no **Service Catalog** (Domínio + Perfil).  
+- Portfólio configurado e acessível ao `data-scientist-test-user`.  
+- SageMaker Studio iniciado com notebooks ativos.  
+- Repositório Git clonado e contêiner personalizado integrado.  
+- Ambiente pronto para **ciência de dados colaborativa, governada e extensível**.
