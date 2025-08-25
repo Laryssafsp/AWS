@@ -1,5 +1,7 @@
 # 🧪 Resumo do Funcionamento do Laboratório 2 (Automação de Fluxo de ML com Step Functions)
 
+[GITHUB](https://github.com/aws/amazon-sagemaker-examples/blob/09f6fad6de75a4520f6f71d661f4b7a8139ce736/sagemaker-pipelines/tabular/abalone_build_train_deploy/sagemaker-pipelines-preprocess-train-evaluate-batch-transform.ipynb)
+
 🎯 **Objetivo Principal**  
 Transformar um **fluxo de Machine Learning (ML)** em um processo **automático e repetível** usando **AWS Step Functions**, integrando com SageMaker, CodeCommit, CodeBuild e CodePipeline.  
 O fluxo gerencia desde o treino até o registro e retraining do modelo.
