@@ -53,4 +53,10 @@ Provisionar um ambiente do **Amazon SageMaker Studio** utilizando o **AWS Servic
 ## 🚀 Resultado Final
 - O domínio do **SageMaker Studio** é criado de forma padronizada via **Service Catalog**.  
 - Usuários podem acessar o ambiente com segurança e começar a desenvolver projetos de ML.  
-- Administradores garantem conformidade e governança dos recursos provisionados.  
+- Administradores garantem conformidade e governança dos recursos provisionados.
+
+- [AWS::SageMaker::Domain](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-domain.html)
+- [AWS::SageMaker::UserProfile](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-userprofile.html)
+- [AWS::SageMaker::Space](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-space.html)
+- [O que é o Amazon SageMaker?](O que é o Amazon SageMaker?)
+- [Amazon SageMaker Features](https://docs.aws.amazon.com/sagemaker/latest/dg/whatis-features-alpha.html)
