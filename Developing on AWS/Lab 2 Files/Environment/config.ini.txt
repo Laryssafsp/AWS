@@ -1,0 +1,10 @@
+[S3]
+bucket_name = notes-bucket-203644761
+object_name = notes
+key_name = notes
+source_file_extension = .csv
+source_content_type = text/csv
+processed_file_extension = .json
+processed_content_type = application/json
+metaData_key = myVal2
+metaData_value = lab2-testing-upload
