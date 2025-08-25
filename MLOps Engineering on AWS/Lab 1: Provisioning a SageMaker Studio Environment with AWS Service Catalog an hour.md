@@ -58,5 +58,5 @@ Provisionar um ambiente do **Amazon SageMaker Studio** utilizando o **AWS Servic
 - [AWS::SageMaker::Domain](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-domain.html)
 - [AWS::SageMaker::UserProfile](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-userprofile.html)
 - [AWS::SageMaker::Space](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-space.html)
-- [O que é o Amazon SageMaker?](O que é o Amazon SageMaker?)
+- [O que é o Amazon SageMaker?]([O que é o Amazon SageMaker?](https://docs.aws.amazon.com/sagemaker/latest/dg/whatis.html))
 - [Amazon SageMaker Features](https://docs.aws.amazon.com/sagemaker/latest/dg/whatis-features-alpha.html)
